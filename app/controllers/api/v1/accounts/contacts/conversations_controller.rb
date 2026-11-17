@@ -9,6 +9,7 @@ class Api::V1::Accounts::Contacts::ConversationsController < Api::V1::Accounts::
                      else
                        permitted_conversations.order(last_activity_at: :desc, id: :desc).limit(RESULTS_PER_PAGE)
                      end
+    Conversations::SuccessfulOutgoingCount.preload(@conversations)
   end
 
   private

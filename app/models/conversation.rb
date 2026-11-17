@@ -73,6 +73,9 @@ class Conversation < ApplicationRecord
   private_constant :CONVERSATION_UPDATED_ADDITIONAL_ATTRIBUTE_KEYS, :FILTERED_UNREAD_COUNT_ADDITIONAL_ATTRIBUTE_KEYS,
                    :FILTERED_UNREAD_COUNT_UPDATE_KEYS
 
+  # Page payloads set this from one grouped query. nil means that response did not load it.
+  attr_accessor :successful_outgoing_count
+
   validates :account_id, presence: true
   validates :inbox_id, presence: true
   validates :contact_id, presence: true
