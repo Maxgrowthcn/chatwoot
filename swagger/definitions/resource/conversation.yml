@@ -68,6 +68,11 @@ properties:
   unread_count:
     type: number
     description: The number of unread messages
+  successful_outgoing_count:
+    type:
+      - number
+      - 'null'
+    description: Successful public outgoing replies on this conversation (sent, delivered, or read). Null when this response did not load the count.
   last_non_activity_message:
     oneOf:
       - $ref: '#/components/schemas/message'

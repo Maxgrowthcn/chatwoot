@@ -11,9 +11,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   ATTACHMENT_RESULTS_PER_PAGE = 100
 
   def index
-    result = conversation_finder.perform
-    @conversations = result[:conversations]
-    @conversations_count = result[:count]
+    assign_conversation_page(conversation_finder.perform)
   end
 
   def meta
@@ -22,9 +20,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 
   def search
-    result = conversation_finder.perform
-    @conversations = result[:conversations]
-    @conversations_count = result[:count]
+    assign_conversation_page(conversation_finder.perform)
   end
 
   def attachments
@@ -36,7 +32,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
                                 .per(ATTACHMENT_RESULTS_PER_PAGE)
   end
 
-  def show; end
+  def show = Conversations::SuccessfulOutgoingCount.preload(@conversation)
 
   def create
     ActiveRecord::Base.transaction do
@@ -50,9 +46,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 
   def filter
-    result = ::Conversations::FilterService.new(params.permit!, current_user, current_account).perform
-    @conversations = result[:conversations]
-    @conversations_count = result[:count]
+    assign_conversation_page(::Conversations::FilterService.new(params.permit!, current_user, current_account).perform)
   rescue CustomExceptions::CustomFilter::InvalidAttribute,
          CustomExceptions::CustomFilter::InvalidOperator,
          CustomExceptions::CustomFilter::InvalidQueryOperator,
@@ -138,6 +132,12 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   end
 
   private
+
+  def assign_conversation_page(result)
+    @conversations = result[:conversations]
+    @conversations_count = result[:count]
+    Conversations::SuccessfulOutgoingCount.preload(@conversations)
+  end
 
   def permitted_update_params
     # TODO: Move the other conversation attributes to this method and remove specific endpoints for each attribute

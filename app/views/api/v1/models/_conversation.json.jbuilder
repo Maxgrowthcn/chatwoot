@@ -22,3 +22,4 @@ json.messages do
   end
 end
 json.account_id conversation.account_id
+json.successful_outgoing_count conversation.successful_outgoing_count
